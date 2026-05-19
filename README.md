@@ -1,6 +1,6 @@
 # Asymmetrical-Rendering Architecture
 
-This engine architecture decouples **view-independent, high-frequency shading math** from **view-dependent, real-time camera rasterization** through a Dual-World Pipeline. By dividing scene elements into asynchronous execution paths, the engine eliminates geometric and material processing bottlenecks, achieving drastically higher framerates without severe compromises to visual fidelity.
+This engine architecture decouples **view-independent, low-frequency shading math** from **view-dependent, real-time camera rasterization** through a Dual-World Pipeline. By dividing scene elements into asynchronous execution paths, the engine eliminates geometric and material processing bottlenecks, achieving drastically higher framerates without severe compromises to visual fidelity.
 
 ---
 
@@ -48,3 +48,7 @@ The Live Pipeline evaluates immediate player geometry and proximity assets at na
 
 ### 2. Spatiotemporal Dither Merge
 To prevent harsh popping artifacts as the Background pipeline data transitions into the high-frequency Live pipeline, a screen-space dither shader is deployed. By changing pixel sampling criteria between the two pipeline layers using a temporal noise mask, the spatial transition boundary becomes visually seamless.
+
+
+**Extra**
+You can theoretically use 3 Pipelines if you want dynamic environments.
