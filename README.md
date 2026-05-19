@@ -1,3 +1,12 @@
+# Asymmetrical-Rendering
+
+> **Developer Note:** This repository is a living design spec born from a massive architectural debate regarding screen-space vs. object-space rendering bottlenecks. The goal here is to map out a production-viable blueprint for a rendering engine that completely decouples heavy global illumination math from high-frequency camera loops, making complex 3D worlds vastly cheaper to render on constrained hardware (like modern consoles or mobile devices). 
+
+Feel free to open an issue or pull request if you want to poke holes in the math, the pipeline timing, or the spatiotemporal alignment metrics.
+
+---
+
+
 # Asymmetrical-Rendering Architecture
 
 This engine architecture decouples **low-frequency, view-independent global illumination math** from **high-frequency, view-dependent camera rasterization** through a Three-Tier Asymmetrical Pipeline. By dividing scene elements into independent execution paths based on update frequency, the engine eliminates geometric and material processing bottlenecks, achieving drastically higher framerates without severe compromises to visual fidelity.
