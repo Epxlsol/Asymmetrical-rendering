@@ -50,5 +50,5 @@ The Live Pipeline evaluates immediate player geometry and proximity assets at na
 To prevent harsh popping artifacts as the Background pipeline data transitions into the high-frequency Live pipeline, a screen-space dither shader is deployed. By changing pixel sampling criteria between the two pipeline layers using a temporal noise mask, the spatial transition boundary becomes visually seamless.
 
 
-**Extra**
+### Extra
 You can theoretically use 3 Pipelines if you want dynamic environments.
