@@ -13,7 +13,6 @@ The frame is assembled using a compositing approach. Each layer maintains its ow
 | **DYNAMIC** | Temporal Reprojection/Glue | Compute (Async) | Every 1-2 Frames |
 | **BACKGROUND** | Voxelization, GI Ray-tracing/Bounces | Compute (Async) | Variable (Staggered) |
 
-[Image of game engine layered rendering composition]
 
 ### 3. Layered Compositing & Stale Data Strategy
 Unlike traditional synchronous pipelines, our compositor follows a **Non-Blocking Composition Policy**:
@@ -26,7 +25,8 @@ We utilize Tensor Cores to bridge the gap between low-frequency `BACKGROUND` upd
 * **Tensor Inference Pass:** Raw, noisy radiance data from the `BACKGROUND` tier is processed by AI-denoisers in the `DYNAMIC` tier.
 * **Temporal Reconstruction:** The AI utilizes current motion vectors and historical frame data to fill in missing light information, providing a stable, high-fidelity result even at lower refresh intervals.
 
-[Image of GPU temporal accumulation and AI denoising process]
+[<img width="1336" height="595" alt="image" src="https://github.com/user-attachments/assets/4eaf9344-9b42-42e0-ad12-e700784a976f" />
+]
 
 ### 5. Architectural Constraints & Mitigations
 | Constraint | Mitigation Strategy |
