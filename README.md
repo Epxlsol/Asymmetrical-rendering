@@ -9,7 +9,7 @@ Feel free to open an issue or pull request if you want to poke holes in the math
 
 # Asymmetrical-Rendering Architecture
 
-This engine architecture decouples **low-frequency, view-independent global illumination math** from **high-frequency, view-dependent camera rasterization** through a Three-Tier Asymmetrical Pipeline. By dividing scene elements into independent execution paths based on update frequency, the engine eliminates geometric and material processing bottlenecks, achieving drastically higher framerates without severe compromises to visual fidelity.
+This engine architecture decouples **low-frequency, view-independent global illumination math** from **high-frequency, view-dependent camera rasterization** through a Three-Tier Asymmetrical Pipeline. By dividing scene elements into independent execution paths based on update frequency, the engine eliminates geometric and material processing bottlenecks, achieving drastically higher framerates without severe compromises to visual fidelity. Theoretically revolutionizing every form of graphics industry from games to filmmaking.
 
 ---
 
