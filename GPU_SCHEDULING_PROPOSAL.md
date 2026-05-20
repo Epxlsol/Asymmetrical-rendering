@@ -25,8 +25,7 @@ We utilize Tensor Cores to bridge the gap between low-frequency `BACKGROUND` upd
 * **Tensor Inference Pass:** Raw, noisy radiance data from the `BACKGROUND` tier is processed by AI-denoisers in the `DYNAMIC` tier.
 * **Temporal Reconstruction:** The AI utilizes current motion vectors and historical frame data to fill in missing light information, providing a stable, high-fidelity result even at lower refresh intervals.
 
-[<img width="1336" height="595" alt="image" src="https://github.com/user-attachments/assets/4eaf9344-9b42-42e0-ad12-e700784a976f" />
-]
+<img width="1336" height="595" alt="image" src="https://github.com/user-attachments/assets/4eaf9344-9b42-42e0-ad12-e700784a976f" />
 
 ### 5. Architectural Constraints & Mitigations
 | Constraint | Mitigation Strategy |
