@@ -40,3 +40,155 @@ markdown_content = """# ARCHITECTURE BLUEPRINT: GPU-Driven Asynchronous Layered 
 **Answer:** We utilize **Virtual Memory Aliasing** at the hardware API level (e.g., Vulkan `vkBindImageMemory`). We allocate a single large block of memory for the Voxel Grid and alias the Read/Write buffers to overlapping memory sectors when temporal data is shared.
 
 ### Data Structures (Pseudo-C++)
+
+
+```
+
+```text
+Blueprint markdown generated successfully.
+
+```cpp
+// Defines the timeline for the compositor
+struct GlobalTimeline {
+    uint64_t current_live_frame;
+    uint64_t last_completed_bg_frame;
+    VkSemaphore bg_compute_finished;
+};
+
+// Voxel Grid Structure (Clipmap for LOD)
+struct VoxelGridClipmap {
+    VkImage volume_textures[LOD_LEVELS]; // 3D Textures
+    uint32_t resolution; // e.g., 256x256x256
+    bool is_dirty;
+};
+
+// The Triple-Buffer Manager
+class AsyncGIManager {
+    VoxelGridClipmap buffer_read;    // Bound to LIVE shader
+    VoxelGridClipmap buffer_write;   // Bound to BACKGROUND compute
+    VoxelGridClipmap buffer_history; // Bound to DYNAMIC tensor core
+    
+    void SwapPointers();
+};
+
+```
+
+---
+
+## 3. The Synchronization State Machine
+
+*Question: How do the Graphics Queue and Compute Queue talk to each other without causing a CPU-side stall?*
+
+**Answer:** The CPU never waits. We use a non-blocking state machine driven by GPU Timeline Semaphores.
+
+### State Machine Lifecycle:
+
+1. **`STATE_IDLE`**: BACKGROUND queue is ready to accept a new voxelization task.
+2. **`STATE_COMPUTING`**: BACKGROUND queue is actively tracing rays. LIVE queue ignores it and reads from `buffer_history`.
+3. **`STATE_READY`**: Compute is done. Next LIVE frame triggers a pointer swap and resets state to `STATE_IDLE`.
+
+### Synchronization Logic
+
+```cpp
+// Executed on the Render Thread at the start of a frame
+void UpdateGIBuffers(GlobalTimeline& timeline, AsyncGIManager& gi_mgr) {
+    if (CheckSemaphoreCondition(timeline.bg_compute_finished) == SIGNALE_READY) {
+        // Compute finished! Safe to swap.
+        gi_mgr.SwapPointers();
+        ResetSemaphore(timeline.bg_compute_finished);
+        DispatchBackgroundComputeAsync(); // Kick off next multi-frame job
+    } else {
+        // Compute is still cooking. Do nothing.
+        // Compositor will automatically use the stale Read buffer.
+    }
+}
+
+```
+
+---
+
+## 4. The Compositing Shader (GLSL Implementation)
+
+*Question: What is the exact math to glue a "stale" background onto a "live" moving frame?*
+
+**Answer:** We sample the motion vector of the current pixel, apply it to the UV coordinates of the previous frame, and sample the stale GI texture. We then use a depth-check to ensure we aren't reprojecting background data onto a newly exposed foreground object.
+
+### Compositor GLSL Pseudo-Code
+
+```glsl
+#version 450
+// Inputs
+layout(binding = 0) uniform sampler2D tex_live_color;
+layout(binding = 1) uniform sampler2D tex_live_depth;
+layout(binding = 2) uniform sampler2D tex_motion_vectors;
+layout(binding = 3) uniform sampler3D tex_stale_gi_volume; // From BACKGROUND
+
+// Outputs
+layout(location = 0) out vec4 FinalPixel;
+
+void main() {
+    vec2 uv = In.UV;
+    
+    // 1. Get Live Data
+    vec4 live_albedo = texture(tex_live_color, uv);
+    float live_depth = texture(tex_live_depth, uv);
+    vec2 motion = texture(tex_motion_vectors, uv).xy;
+    
+    // 2. Reproject History (DYNAMIC Tier Math)
+    vec2 history_uv = uv - motion;
+    
+    // 3. Disocclusion Check (Are we looking at something new?)
+    float history_depth = GetHistoryDepth(history_uv);
+    float depth_delta = abs(live_depth - history_depth);
+    
+    vec4 gi_contribution;
+    if (depth_delta > DEPTH_TOLERANCE) {
+        // DISOCCLUSION DETECTED: Fallback to low-quality ambient or screen-space
+        gi_contribution = FallbackAmbient(); 
+    } else {
+        // VALID HISTORY: Sample the 3D Voxel Grid using World Position
+        vec3 world_pos = ReconstructWorldPos(uv, live_depth);
+        gi_contribution = texture(tex_stale_gi_volume, world_pos * grid_scale);
+        
+        // Tensor Denoise Weighting would be applied here
+    }
+    
+    // 4. Final Layer Composition
+    FinalPixel = live_albedo * gi_contribution;
+}
+
+```
+
+---
+
+## 5. Handling Edge Cases: Disocclusion & AI Denoising
+
+*Question: What happens when the AI denoiser hallucinates or when objects move too fast?*
+
+**Answer:** 1. **The Disocclusion Fallback:** As seen in the shader above, if a pixel's depth changes radically (an object moved out of the way), the history is invalidated. We fallback to Screen Space Global Illumination (SSGI) for that specific pixel for exactly 1 frame until the `BACKGROUND` tier updates.
+2. **AI Confidence Mapping:** The Tensor denoiser outputs a "Confidence Map" (a 1-channel texture). If confidence is low (due to lack of rays or fast movement), the Compositor lowers the opacity of the GI layer, blending it with a uniform ambient light to prevent visual noise or artifacts.
+
+---
+
+## 6. Debugging & Profiling API
+
+*Question: How do we prove this works to other engineers?*
+
+**Answer:** We expose the layers visually through Engine Console Variables (CVARs). This is critical for profiling bandwidth and logic.
+
+### Console Commands to Implement:
+
+* `r_gi_async_enable [0/1]`: Toggles between legacy sync baking and the Three-Tier async scheduler.
+* `r_gi_force_bg_interval [int]`: Forces the BACKGROUND tier to update every X frames. (Set to 60 to easily see the temporal reprojection at work).
+* `r_gi_debug_layer [live/dynamic/background]`: Overrides the final output to display only the raw buffer of a specific tier.
+* `r_gi_show_disocclusion [0/1]`: Renders pixels bright red if they fail the motion-vector depth check, allowing engineers to tune the depth tolerance.
+
+---
+
+*Document designed to serve as the foundational architectural blueprint for implementation within modern C++/Vulkan rendering engines.*
+"""
+
+with open("GPU_ARCHITECTURE_BLUEPRINT.md", "w") as f:
+f.write(markdown_content)
+
+```
