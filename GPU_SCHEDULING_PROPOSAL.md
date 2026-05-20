@@ -35,6 +35,6 @@ We utilize Tensor Cores to bridge the gap between low-frequency `BACKGROUND` upd
 | **Light Bleed** | Disocclusion detection triggers an immediate high-priority BACKGROUND update pass. |
 
 ### 6. Summary
-By shifting from an atomic rendering model to an **Asynchronous Layered Composition** model, we transform GI from a performance-draining bottleneck into a background service. This system provides a path to real-time, interactive, and high-fidelity worlds that scale gracefully across hardware tiers.
+By shifting from an atomic rendering model to an **Asynchronous Layered Composition** model, we transform GI from a performance-draining bottleneck into a background service. This system provides a path to real-time, interactive, and high-fidelity worlds that scale across hardware tiers.
 
 ---
