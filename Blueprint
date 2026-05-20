@@ -1,3 +1,4 @@
+```python
 # Generating the comprehensive Markdown Blueprint file.
 
 markdown_content = """# ARCHITECTURE BLUEPRINT: GPU-Driven Asynchronous Layered Compositing
