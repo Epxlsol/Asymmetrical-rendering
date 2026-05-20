@@ -1,0 +1,41 @@
+# Generating the comprehensive Markdown Blueprint file.
+
+markdown_content = """# ARCHITECTURE BLUEPRINT: GPU-Driven Asynchronous Layered Compositing
+**Status:** Engineering Draft v1.0
+**Target Subsystem:** Global Illumination / Rendering Pipeline
+**Paradigm:** Asynchronous Layered Compositing & Eventual Consistency
+
+---
+
+## Table of Contents
+1. [Core Philosophy & Architecture Overivew](#1-core-philosophy--architecture-overview)
+2. [Memory Management & Resource Aliasing](#2-memory-management--resource-aliasing)
+3. [The Synchronization State Machine](#3-the-synchronization-state-machine)
+4. [The Compositing Shader (GLSL Implementation)](#4-the-compositing-shader-glsl-implementation)
+5. [Handling Edge Cases: Disocclusion & VRAM limits](#5-handling-edge-cases-disocclusion--vram-limits)
+6. [Debugging & Profiling API](#6-debugging--profiling-api)
+
+---
+
+## 1. Core Philosophy & Architecture Overview
+
+*Question: How do we decouple light simulation from pixel rendering without breaking visual consistency?*
+
+**Answer:** By abandoning the atomic frame model. We divide the frame into three asynchronous layers, each mapped to specific GPU hardware queues. The Compositor assumes that `BACKGROUND` data is inherently "stale" and uses `DYNAMIC` reprojection to align it with `LIVE` geometry.
+
+### Hardware Queue Mapping
+| Layer | Hardware Unit | Refresh Target | V-Sync Linked? |
+| :--- | :--- | :--- | :--- |
+| **LIVE** | Graphics Queue (SMs) | 16.6ms (60fps+) | YES |
+| **DYNAMIC** | Async Compute / Tensor Cores | 16.6ms (60fps+) | YES |
+| **BACKGROUND**| Async Compute Queue | 33ms - 66ms (Staggered) | NO |
+
+---
+
+## 2. Memory Management & Resource Aliasing
+
+*Question: If we are keeping historical frames and ping-ponging buffers, how do we avoid doubling our VRAM footprint?*
+
+**Answer:** We utilize **Virtual Memory Aliasing** at the hardware API level (e.g., Vulkan `vkBindImageMemory`). We allocate a single large block of memory for the Voxel Grid and alias the Read/Write buffers to overlapping memory sectors when temporal data is shared.
+
+### Data Structures (Pseudo-C++)
