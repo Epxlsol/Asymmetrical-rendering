@@ -1,6 +1,6 @@
 # Easy method: Asynchronous GI Rendering
 
-A "Lighting Traffic Controller" for real-time engines that makes high-quality Global Illumination accessible on low-end hardware (like the Intel HD 4600) by abandoning the "do everything every frame" mindset.
+A "Lighting Traffic Controller" for real-time engines that makes high-quality Global Illumination accessible on low-end hardware by abandoning the "do everything every frame" mindset.
 
 ## The Problem
 Modern real-time engines are addicted to "Brute Force"—trying to calculate every bounce of light, every single frame. This kills performance and wastes GPU cycles on lighting that the human eye doesn't even need to be frame-accurate.
@@ -24,7 +24,7 @@ Instead of recomputing the entire world's lighting at once, we use a **Hybrid Pi
 By treating lighting as a **Traffic Controller** rather than a **Static Bake**, we achieve:
 * **Massive Performance Gains:** Dramatically lower GPU overhead.
 * **Cinematic Softness:** Temporal blending eliminates "flicker" and creates naturally soft, unified lighting.
-* **Hardware Inclusivity:** Bring high-end visual fidelity to modest hardware (Intel HD 4600+) without sacrificing the "live" feel of your game.
+* **Hardware Inclusivity:** Bring high-end visual fidelity to modest hardware without sacrificing the "live" feel of your game.
 
 ## Concept vs. Implementation
 This project is an architectural framework. It is not about writing thousands of lines of code; it is about choosing **where** and **when** the math happens. 
