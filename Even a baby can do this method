@@ -1,5 +1,3 @@
-# Baby version: Asynchronous GI Rendering
-
 A "Lighting Traffic Controller" for real-time engines that makes high-quality Global Illumination accessible on low-end hardware (like the Intel HD 4600) by abandoning the "do everything every frame" mindset.
 
 ## The Problem
