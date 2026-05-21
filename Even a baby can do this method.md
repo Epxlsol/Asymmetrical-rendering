@@ -1,3 +1,5 @@
+# Easy method: Asynchronous GI Rendering
+
 A "Lighting Traffic Controller" for real-time engines that makes high-quality Global Illumination accessible on low-end hardware (like the Intel HD 4600) by abandoning the "do everything every frame" mindset.
 
 ## The Problem
@@ -29,4 +31,4 @@ This project is an architectural framework. It is not about writing thousands of
 
 ---
 
-*This project will later become a Proof of Concept for asynchronous rendering architecture. Contributions, critique, and architectural discussions are welcome.*
+*This project will become a Proof of Concept for asynchronous rendering architecture. Contributions, critique, and architectural discussions are welcome.*
